@@ -1,0 +1,84 @@
+
+  // MOVE                                                w   reg
+  // Immediate to register              >>>>(1011) 4bits 0 - 000
+  //
+  //                                                     d - w
+  // Register/memory to/from register   >>(100010) 6bits 0 - 0
+  //
+  //                                                     w
+  // Immediate to register/memory       >(1100011) 7bits 0
+  // Memory to accumlator               >(1010000) 7bits 0
+  // Accumlator to memory               >(1010001) 7bits 0
+  // Reg/mem to seg reg                 (10001110) 8bits
+  // seg reg to Reg/mem                 (10001100) 8bits
+  
+  // TODO(MIGUEL): Could this be a table? yes
+  // move: immediate to reg
+  Prefix = (MemOp[0]>>4);
+  if(Prefix == 0x0b) {
+    ShiftToNextField = 3;
+    goto DecodePrefixFinalize;
+  }
+  // move: reg/mem to/from reg
+  Prefix = (MemOp[0]>>2);
+  if(Prefix == 0x62) {
+    ShiftToNextField = 1; 
+    goto DecodePrefixFinalize;
+  }
+  // move: immediate to reg/mem move
+  Prefix = (MemOp[0]>>1);
+  if(Prefix == 0x63) {
+    ShiftToNextField = 0; 
+    goto DecodePrefixFinalize;
+  }
+  // move: accumalator move
+  Prefix = (MemOp[0]>>1);
+  if(Prefix == 0x51) {
+    ShiftToNextField = 0; 
+    goto DecodePrefixFinalize;
+  }
+  if(Prefix == 0x50) {
+    ShiftToNextField = 0; 
+    goto DecodePrefixFinalize;
+  }
+  // move: segmented registr
+  Prefix = (MemOp[0]>>0);
+  if(Prefix == 0x8c) {
+    ShiftToNextField = NO_FIELDS_REMAINING; 
+  }
+  if(Prefix == 0x8e) {
+    ShiftToNextField = NO_FIELDS_REMAINING; 
+    
+  }
+
+///
+// TODO(MIGUEL): Decode an immediateto register move
+  // for immediate to reg move depending on the w bit a byte or word string will be output as nasm in square bracketes. denotes how much memory is useed to encodea an immediate???
+  
+  // dest v      v src <- can be changed with the d(Dest) bit? 
+  //  reg v         v this is the displacment
+  // mov bx, [bp + 75]
+  // Decoding this give us an idea of how long the instruction is 
+  switch(Instruction.Mod)
+  {
+    case MOD_REG_TO_REG:
+    {
+      //Op type register to register
+      const char *RegNameReg = Instruction.Width==1?RegTableWide[Instruction.Reg]:RegTable[Instruction.Reg];
+      const char *RegNameRM  = Instruction.Width==1?RegTableWide[Instruction.RegMem ]:RegTable[Instruction.RegMem ];
+      OperandSrc  = Instruction.IsRegDest==1?RegNameRM :RegNameReg;
+      OperandDest = Instruction.IsRegDest==1?RegNameReg:RegNameRM;
+    }break;
+    case MOD_EAC_DISP8:
+    {
+      // effective address calculation
+    }break;
+    case MOD_EAC_DISP16:
+    {
+      // direct address  calctulation
+    }break;
+    default:
+    {
+      
+    }break;
+  }

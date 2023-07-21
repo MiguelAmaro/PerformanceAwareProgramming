@@ -9,5 +9,5 @@ mov al, cl
 mov ch, ch
 mov bx, ax
 mov bx, si
-mov sb, di
+mov sp, di
 mov bp, ax
